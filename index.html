@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AHMAD PERDIANSYAH | Graphic Designer Portfolio</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --red-primary: #E63946;
+            --red-dark: #B22234;
+            --red-light: #FF6B6B;
+            --black-deep: #0A0A0A;
+            --black-soft: #141414;
+            --black-medium: #1A1A1A;
+            --white: #FAFAFA;
+            --gray: #888888;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--black-deep);
+            color: var(--white);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--red-primary);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-follower {
+            width: 8px;
+            height: 8px;
+            background: var(--red-primary);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.3s ease;
+        }
+
+        .cursor.active {
+            transform: scale(2);
+            background: rgba(230, 57, 70, 0.2);
+        }
+
+        /* Page Loader */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--black-deep);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .loader-text {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 8vw;
+            color: var(--red-primary);
+            letter-spacing: 0.5em;
+            overflow: hidden;
+        }
+
+        .loader-progress {
+            width: 200px;
+            height: 2px;
+            background: var(--black-medium);
+            margin-top: 30px;
+            overflow: hidden;
+        }
+
+        .loader-progress-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--red-primary);
+            transition: width 0.3s ease;
+        }
+
+        /* Glitch Effect */
+        .glitch {
+            position: relative;
+            animation: glitch-skew 1s infinite linear alternate-reverse;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            animation: glitch-effect 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+            color: var(--red-light);
+            clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+            transform: translate(-2px, -2px);
+        }
+
+        .glitch::after {
+            animation: glitch-effect 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both infinite;
+            color: #00FFFF;
+            clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+            transform: translate(2px, 2px);
+        }
+
+        @keyframes glitch-effect {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes glitch-skew {
+            0% { transform: skew(0deg); }
+            10% { transform: skew(-0.5deg); }
+            20% { transform: skew(0.5deg); }
+            30% { transform: skew(0deg); }
+            100% { transform: skew(0deg); }
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 30px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            mix-blend-mode: difference;
+        }
+
+        .nav-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 0.3em;
+            color: var(--white);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 50px;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0%;
+            height: 1px;
+            background: var(--red-primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .menu-toggle span {
+            width: 30px;
+            height: 2px;
+            background: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        /* Hero Section */
+        #hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .hero-subtitle {
+            font-size: 0.9rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            color: var(--red-primary);
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .hero-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(3rem, 15vw, 12rem);
+            line-height: 0.9;
+            letter-spacing: 0.05em;
+            margin-bottom: 30px;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--gray);
+            max-width: 500px;
+            margin: 0 auto 50px;
+            line-height: 1.8;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px 40px;
+            background: transparent;
+            border: 1px solid var(--red-primary);
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .hero-cta:hover {
+            background: var(--red-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(230, 57, 70, 0.3);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: var(--gray);
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--red-primary), transparent);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { transform: scaleY(1); opacity: 1; }
+            50% { transform: scaleY(0.5); opacity: 0.5; }
+        }
+
+        /* About Section */
+        #about {
+            padding: 150px 50px;
+            position: relative;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            color: var(--red-primary);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .section-label::before {
+            content: '';
+            width: 50px;
+            height: 1px;
+            background: var(--red-primary);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+            align-items: center;
+        }
+
+        .about-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            line-height: 1.1;
+            margin-bottom: 40px;
+        }
+
+        .about-title span {
+            color: var(--red-primary);
+        }
+
+        .about-text {
+            color: var(--gray);
+            line-height: 2;
+            margin-bottom: 30px;
+        }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 30px;
+            background: var(--black-soft);
+            border: 1px solid var(--black-medium);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            border-color: var(--red-primary);
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3rem;
+            color: var(--red-primary);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gray);
+            margin-top: 10px;
+        }
+
+        .about-image {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 600px;
+            object-fit: cover;
+            filter: grayscale(100%);
+            transition: filter 0.5s ease;
+        }
+
+        .about-image:hover img {
+            filter: grayscale(0%);
+        }
+
+        .about-image::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: -20px;
+            bottom: -20px;
+            border: 1px solid var(--red-primary);
+            z-index: -1;
+        }
+
+        /* Projects Section */
+        #projects {
+            padding: 150px 50px;
+            background: var(--black-soft);
+        }
+
+        .projects-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 80px;
+        }
+
+        .projects-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 50px;
+        }
+
+        .project-card {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .project-card:nth-child(2) {
+            margin-top: 100px;
+        }
+
+        .project-card:nth-child(3) {
+            margin-top: -50px;
+        }
+
+        .project-thumbnail {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 4/5;
+        }
+
+        .project-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .project-card:hover .project-thumbnail img {
+            transform: scale(1.1);
+        }
+
+        .project-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(10, 10, 10, 0.9) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 40px;
+        }
+
+        .project-card:hover .project-overlay {
+            opacity: 1;
+        }
+
+        .project-category {
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--red-primary);
+            margin-bottom: 10px;
+        }
+
+        .project-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 10px;
+        }
+
+        .project-desc {
+            font-size: 0.85rem;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        .project-info {
+            padding: 30px 0;
+        }
+
+        .project-info-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .project-card:hover .project-info-title {
+            color: var(--red-primary);
+        }
+
+        .project-info-category {
+            font-size: 0.75rem;
+            color: var(--gray);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        /* Case Study Modal */
+        .case-study-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--black-deep);
+            z-index: 10000;
+            overflow-y: auto;
+            transform: translateY(100%);
+            transition: transform 0.6s cubic-bezier(0.76, 0, 0.24, 1);
+        }
+
+        .case-study-modal.active {
+            transform: translateY(0);
+        }
+
+        .case-study-close {
+            position: fixed;
+            top: 40px;
+            right: 50px;
+            width: 50px;
+            height: 50px;
+            border: 1px solid var(--white);
+            background: transparent;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10001;
+        }
+
+        .case-study-close:hover {
+            background: var(--red-primary);
+            border-color: var(--red-primary);
+        }
+
+        .case-study-content {
+            padding: 150px 100px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .case-study-hero {
+            margin-bottom: 100px;
+        }
+
+        .case-study-category {
+            font-size: 0.75rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            color: var(--red-primary);
+            margin-bottom: 30px;
+        }
+
+        .case-study-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(3rem, 8vw, 7rem);
+            line-height: 1;
+            margin-bottom: 50px;
+        }
+
+        .case-study-meta {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            padding: 50px 0;
+            border-top: 1px solid var(--black-medium);
+            border-bottom: 1px solid var(--black-medium);
+        }
+
+        .meta-item h4 {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .meta-item p {
+            font-size: 1rem;
+        }
+
+        .case-study-image {
+            width: 100%;
+            margin: 80px 0;
+        }
+
+        .case-study-image img {
+            width: 100%;
+            height: auto;
+        }
+
+        .case-study-section {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 100px;
+            margin: 100px 0;
+        }
+
+        .case-study-section h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 0.1em;
+            color: var(--red-primary);
+        }
+
+        .case-study-section p {
+            color: var(--gray);
+            line-height: 2;
+            font-size: 1.1rem;
+        }
+
+        /* Skills Section */
+        #skills {
+            padding: 150px 50px;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 80px;
+        }
+
+        .skill-card {
+            padding: 50px 40px;
+            background: var(--black-soft);
+            border: 1px solid var(--black-medium);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--red-primary);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .skill-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .skill-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--red-primary);
+        }
+
+        .skill-icon {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+
+        .skill-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 15px;
+        }
+
+        .skill-desc {
+            font-size: 0.85rem;
+            color: var(--gray);
+            line-height: 1.8;
+        }
+
+        /* Contact Section */
+        #contact {
+            padding: 150px 50px;
+            background: var(--black-soft);
+            position: relative;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+        }
+
+        .contact-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            line-height: 1;
+            margin-bottom: 40px;
+        }
+
+        .contact-title span {
+            color: var(--red-primary);
+        }
+
+        .contact-text {
+            color: var(--gray);
+            line-height: 2;
+            margin-bottom: 50px;
+            max-width: 500px;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 1rem;
+            color: var(--white);
+            transition: color 0.3s ease;
+        }
+
+        .contact-item:hover {
+            color: var(--red-primary);
+        }
+
+        .contact-item svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--red-primary);
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 20px 0;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--black-medium);
+            color: var(--white);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--red-primary);
+        }
+
+        .form-group label {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            font-size: 0.85rem;
+            color: var(--gray);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus + label,
+        .form-group input:valid + label,
+        .form-group textarea:focus + label,
+        .form-group textarea:valid + label {
+            top: -10px;
+            font-size: 0.7rem;
+            color: var(--red-primary);
+        }
+
+        .form-group textarea {
+            resize: none;
+            height: 150px;
+        }
+
+        .submit-btn {
+            padding: 20px 50px;
+            background: var(--red-primary);
+            border: none;
+            color: var(--white);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            align-self: flex-start;
+        }
+
+        .submit-btn:hover {
+            background: var(--red-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(230, 57, 70, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            padding: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--black-medium);
+        }
+
+        .footer-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 0.3em;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 30px;
+        }
+
+        .footer-social a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            color: var(--red-primary);
+        }
+
+        .footer-copy {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .about-grid,
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .projects-grid {
+                gap: 30px;
+            }
+
+            .project-card:nth-child(2),
+            .project-card:nth-child(3) {
+                margin-top: 0;
+            }
+
+            .skills-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .case-study-content {
+                padding: 100px 50px;
+            }
+
+            .case-study-meta {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .case-study-section {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                padding: 20px 30px;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background: var(--black-deep);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 40px;
+                transform: translateX(100%);
+                transition: transform 0.5s ease;
+            }
+
+            .nav-menu.active {
+                transform: translateX(0);
+            }
+
+            .nav-menu a {
+                font-size: 1.5rem;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .menu-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .menu-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .menu-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -6px);
+            }
+
+            #about,
+            #projects,
+            #skills,
+            #contact {
+                padding: 100px 30px;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .about-image img {
+                height: 400px;
+            }
+
+            footer {
+                flex-direction: column;
+                gap: 30px;
+                text-align: center;
+            }
+
+            .case-study-content {
+                padding: 100px 30px;
+            }
+
+            .case-study-meta {
+                grid-template-columns: 1fr;
+            }
+
+            .cursor,
+            .cursor-follower {
+                display: none;
+            }
+
+            body {
+                cursor: auto;
+            }
+        }
+
+        /* Marquee */
+        .marquee {
+            padding: 30px 0;
+            background: var(--red-primary);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+
+        .marquee-content span {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 0.3em;
+            margin: 0 50px;
+            color: var(--black-deep);
+        }
+
+        @keyframes marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        /* Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(80px);
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Noise overlay */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body>
+    <!-- Noise Overlay -->
+    <div class="noise"></div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Page Loader -->
+    <div class="loader">
+        <div class="loader-text">HI HUMAN</div>
+        <div class="loader-progress">
+            <div class="loader-progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-logo">AHMAD PERDIANSYAH</div>
+        <ul class="nav-menu">
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#projects">Work</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <canvas id="hero-canvas"></canvas>
+        <div class="hero-content">
+            <p class="hero-subtitle">Creative Graphic Designer</p>
+            <h1 class="hero-title glitch" data-text="AHMAD PERDIANSYAH">AHMAD PERDIANSYAH</h1>
+            <p class="hero-description">Crafting visual experiences that push boundaries and redefine digital aesthetics. Where creativity meets precision.</p>
+            <a href="#projects" class="hero-cta">
+                View Works
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="marquee">
+        <div class="marquee-content">
+            <span>BRANDING</span>
+            <span>●</span>
+            <span>UI/UX DESIGN</span>
+            <span>●</span>
+            <span>TYPOGRAPHY</span>
+            <span>●</span>
+            <span>ILLUSTRATION</span>
+            <span>●</span>
+            <span>BRANDING</span>
+            <span>●</span>
+            <span>UI/UX DESIGN</span>
+            <span>●</span>
+            <span>TYPOGRAPHY</span>
+            <span>●</span>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="about-grid">
+            <div class="about-content">
+                <div class="section-label reveal">About Me</div>
+                <h2 class="about-title reveal">DESIGNING THE <span>FUTURE</span> OF VISUAL COMMUNICATION</h2>
+                <p class="about-text reveal">I'm Ahmad Perdiansyah, a 22-year-old passionate graphic designer creating impactful visual solutions for brands worldwide. My approach combines minimalist aesthetics with bold creative thinking to deliver designs that not only look stunning but also drive results.</p>
+                <p class="about-text reveal">From brand identity systems to digital experiences, I bring a meticulous attention to detail and a deep understanding of design principles to every project I undertake.</p>
+                <div class="about-stats reveal">
+                    <div class="stat-item">
+                        <div class="stat-number">150+</div>
+                        <div class="stat-label">Projects</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">80+</div>
+                        <div class="stat-label">Clients</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Awards</div>
+                    </div>
+                </div>
+            </div>
+            <div class="about-image reveal">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80" alt="Designer Portrait">
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects">
+        <div class="projects-header">
+            <div>
+                <div class="section-label reveal">Selected Work</div>
+                <h2 class="projects-title reveal">FEATURED PROJECTS</h2>
+            </div>
+        </div>
+        <div class="projects-grid">
+            <div class="project-card reveal" data-project="1">
+                <div class="project-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80" alt="Project 1">
+                    <div class="project-overlay">
+                        <div class="project-category">Branding / Identity</div>
+                        <div class="project-name">NOVA TECH</div>
+                        <div class="project-desc">Complete brand identity for a cutting-edge tech startup</div>
+                    </div>
+                </div>
+                <div class="project-info">
+                    <h3 class="project-info-title">NOVA TECH</h3>
+                    <p class="project-info-category">Branding / Identity</p>
+                </div>
+            </div>
+            <div class="project-card reveal" data-project="2">
+                <div class="project-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&q=80" alt="Project 2">
+                    <div class="project-overlay">
+                        <div class="project-category">UI/UX Design</div>
+                        <div class="project-name">PULSE APP</div>
+                        <div class="project-desc">Health & fitness mobile application design</div>
+                    </div>
+                </div>
+                <div class="project-info">
+                    <h3 class="project-info-title">PULSE APP</h3>
+                    <p class="project-info-category">UI/UX Design</p>
+                </div>
+            </div>
+            <div class="project-card reveal" data-project="3">
+                <div class="project-thumbnail">
+                    <img src="" alt="Project 3">
+                    <div class="project-overlay">
+                        <div class="project-category">Typography</div>
+                        <div class="project-name">METRO FONT</div>
+                        <div class="project-desc">Custom typeface design for urban lifestyle brand</div>
+                    </div>
+                </div>
+                <div class="project-info">
+                    <h3 class="project-info-title">METRO FONT</h3>
+                    <p class="project-info-category">Typography</p>
+                </div>
+            </div>
+            <div class="project-card reveal" data-project="4">
+                <div class="project-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80" alt="Project 4">
+                    <div class="project-overlay">
+                        <div class="project-category">Motion Graphics</div>
+                        <div class="project-name">AURORA</div>
+                        <div class="project-desc">Animated visual identity for music festival</div>
+                    </div>
+                </div>
+                <div class="project-info">
+                    <h3 class="project-info-title">AURORA</h3>
+                    <p class="project-info-category">Motion Graphics</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Case Study Modal -->
+    <div class="case-study-modal" id="caseStudyModal">
+        <button class="case-study-close">&times;</button>
+        <div class="case-study-content">
+            <div class="case-study-hero">
+                <div class="case-study-category">Branding / Identity</div>
+                <h1 class="case-study-title" id="caseStudyTitle">NOVA TECH</h1>
+                <div class="case-study-meta">
+                    <div class="meta-item">
+                        <h4>Client</h4>
+                        <p id="caseClient">Nova Technologies Inc.</p>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Year</h4>
+                        <p>2024</p>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Services</h4>
+                        <p id="caseServices">Brand Strategy, Visual Identity, Guidelines</p>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Industry</h4>
+                        <p id="caseIndustry">Technology</p>
+                    </div>
+                </div>
+            </div>
+            <div class="case-study-image">
+                <img id="caseImage" src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1400&q=80" alt="Project Hero">
+            </div>
+            <div class="case-study-section">
+                <h3>THE CHALLENGE</h3>
+                <p id="caseChallenge">Nova Tech approached us with a need to establish a strong visual presence in the competitive tech market. They required a brand identity that would communicate innovation, reliability, and forward-thinking approach while remaining approachable to their diverse customer base.</p>
+            </div>
+            <div class="case-study-section">
+                <h3>THE PROCESS</h3>
+                <p id="caseProcess">Our design process began with extensive research into the tech industry landscape and Nova's target audience. We conducted stakeholder interviews, competitive analysis, and brand workshops to understand the core values and differentiators. Through iterative design explorations, we developed a visual system that balances technological sophistication with human warmth.</p>
+            </div>
+            <div class="case-study-section">
+                <h3>THE SOLUTION</h3>
+                <p id="caseSolution">The final brand identity features a bold, geometric logomark that represents connectivity and innovation. The color palette combines deep tech blues with vibrant accent colors, while the custom typography system ensures brand consistency across all touchpoints. We delivered a comprehensive brand guidelines document and asset library.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills Section -->
+    <section id="skills">
+        <div class="section-label reveal">Expertise</div>
+        <h2 class="projects-title reveal">WHAT I DO BEST</h2>
+        <div class="skills-grid">
+            <div class="skill-card reveal">
+                <div class="skill-icon">🎨</div>
+                <h3 class="skill-name">BRAND IDENTITY</h3>
+                <p class="skill-desc">Creating cohesive visual systems that define and elevate brand presence across all touchpoints.</p>
+            </div>
+            <div class="skill-card reveal">
+                <div class="skill-icon">📱</div>
+                <h3 class="skill-name">UI/UX DESIGN</h3>
+                <p class="skill-desc">Designing intuitive digital experiences that balance aesthetics with seamless functionality.</p>
+            </div>
+            <div class="skill-card reveal">
+                <div class="skill-icon">✏️</div>
+                <h3 class="skill-name">TYPOGRAPHY</h3>
+                <p class="skill-desc">Crafting custom typefaces and typographic systems that give brands a unique voice.</p>
+            </div>
+            <div class="skill-card reveal">
+                <div class="skill-icon">🎬</div>
+                <h3 class="skill-name">MOTION DESIGN</h3>
+                <p class="skill-desc">Bringing static designs to life through animation and dynamic visual storytelling.</p>
+            </div>
+            <div class="skill-card reveal">
+                <div class="skill-icon">🖼️</div>
+                <h3 class="skill-name">ILLUSTRATION</h3>
+                <p class="skill-desc">Creating custom illustrations that add personality and visual interest to any project.</p>
+            </div>
+            <div class="skill-card reveal">
+                <div class="skill-icon">📦</div>
+                <h3 class="skill-name">PACKAGING</h3>
+                <p class="skill-desc">Designing packaging that stands out on shelves and creates memorable unboxing experiences.</p>
+            </div>
+            <div class="skill-card reveal">
+                <div class="skill-icon">📐</div>
+                <h3 class="skill-name">PRINT DESIGN</h3>
+                <p class="skill-desc">Creating impactful print materials from business cards to large-format installations.</p>
+            </div>
+            <div class="skill-card reveal">
+                <div class="skill-icon">🎯</div>
+                <h3 class="skill-name">ART DIRECTION</h3>
+                <p class="skill-desc">Leading creative vision and ensuring visual consistency across campaigns and projects.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="contact-grid">
+            <div class="contact-left">
+                <div class="section-label reveal">Get in Touch</div>
+                <h2 class="contact-title reveal">LET'S CREATE <span>SOMETHING</span> AMAZING</h2>
+                <p class="contact-text reveal">Have a project in mind? I'd love to hear about it. Let's discuss how we can work together to bring your vision to life.</p>
+                <div class="contact-info reveal">
+                    <div class="contact-item">
+                        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                        <span>hello@ahmadperdiansyah.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                        <span>+62 812 3456 7890</span>
+                    </div>
+                    <div class="contact-item">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                        <span>Jakarta, Indonesia</span>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-right reveal">
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <input type="text" id="name" required>
+                        <label for="name">Your Name</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="email" required>
+                        <label for="email">Email Address</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="subject" required>
+                        <label for="subject">Subject</label>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="message" required></textarea>
+                        <label for="message">Your Message</label>
+                    </div>
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">AHMAD PERDIANSYAH</div>
+        <div class="footer-social">
+            <a href="#">Behance</a>
+            <a href="#">Dribbble</a>
+            <a href="#">Instagram</a>
+            <a href="#">LinkedIn</a>
+        </div>
+        <div class="footer-copy">© 2025 Ahmad Perdiansyah. All rights reserved.</div>
+    </footer>
+
+    <script>
+        // Page Loader
+        const loader = document.querySelector('.loader');
+        const progressBar = document.querySelector('.loader-progress-bar');
+        let progress = 0;
+
+        const loadingInterval = setInterval(() => {
+            progress += Math.random() * 30;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(loadingInterval);
+                setTimeout(() => {
+                    gsap.to(loader, {
+                        yPercent: -100,
+                        duration: 0.8,
+                        ease: 'power4.inOut',
+                        onComplete: () => {
+                            loader.style.display = 'none';
+                            initAnimations();
+                        }
+                    });
+                }, 500);
+            }
+            progressBar.style.width = progress + '%';
+        }, 200);
+
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor');
+        const cursorFollower = document.querySelector('.cursor-follower');
+
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, { x: e.clientX - 10, y: e.clientY - 10, duration: 0.1 });
+            gsap.to(cursorFollower, { x: e.clientX - 4, y: e.clientY - 4, duration: 0.3 });
+        });
+
+        document.querySelectorAll('a, button, .project-card').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+        });
+
+        // Mobile Menu Toggle
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        navMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                menuToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Three.js Hero Background
+        function initThreeJS() {
+            const canvas = document.getElementById('hero-canvas');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Create particles
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 2000;
+            const posArray = new Float32Array(particlesCount * 3);
+
+            for (let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 10;
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.02,
+                color: 0xE63946,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+
+            // Create geometric shapes
+            const torusGeometry = new THREE.TorusGeometry(1.5, 0.02, 16, 100);
+            const torusMaterial = new THREE.MeshBasicMaterial({ color: 0xE63946, wireframe: true });
+            const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+            torus.position.set(3, 0, -2);
+            scene.add(torus);
+
+            const icosahedronGeometry = new THREE.IcosahedronGeometry(1, 0);
+            const icosahedronMaterial = new THREE.MeshBasicMaterial({ color: 0xE63946, wireframe: true });
+            const icosahedron = new THREE.Mesh(icosahedronGeometry, icosahedronMaterial);
+            icosahedron.position.set(-3, 1, -3);
+            scene.add(icosahedron);
+
+            const octahedronGeometry = new THREE.OctahedronGeometry(0.8, 0);
+            const octahedronMaterial = new THREE.MeshBasicMaterial({ color: 0xE63946, wireframe: true });
+            const octahedron = new THREE.Mesh(octahedronGeometry, octahedronMaterial);
+            octahedron.position.set(2, -2, -1);
+            scene.add(octahedron);
+
+            camera.position.z = 5;
+
+            let mouseX = 0;
+            let mouseY = 0;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                particlesMesh.rotation.y += 0.001;
+                particlesMesh.rotation.x += 0.0005;
+
+                torus.rotation.x += 0.01;
+                torus.rotation.y += 0.005;
+
+                icosahedron.rotation.x += 0.008;
+                icosahedron.rotation.y += 0.01;
+
+                octahedron.rotation.x += 0.012;
+                octahedron.rotation.z += 0.008;
+
+                camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+                camera.position.y += (mouseY * 0.5 - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        // Initialize Animations
+        function initAnimations() {
+            initThreeJS();
+
+            // Hero animations
+            gsap.to('.hero-subtitle', { opacity: 1, y: 0, duration: 1, delay: 0.3 });
+            gsap.to('.hero-description', { opacity: 1, y: 0, duration: 1, delay: 0.6 });
+            gsap.to('.hero-cta', { opacity: 1, y: 0, duration: 1, delay: 0.9 });
+
+            // Scroll reveal animations
+            gsap.registerPlugin(ScrollTrigger);
+
+            document.querySelectorAll('.reveal').forEach(el => {
+                ScrollTrigger.create({
+                    trigger: el,
+                    start: 'top 85%',
+                    onEnter: () => el.classList.add('active')
+                });
+            });
+
+            // Parallax effects
+            gsap.to('.about-image img', {
+                yPercent: -20,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: '#about',
+                    start: 'top bottom',
+                    end: 'bottom top',
+                    scrub: true
+                }
+            });
+
+            // Stats counter animation
+            document.querySelectorAll('.stat-number').forEach(stat => {
+                const target = parseInt(stat.textContent);
+                ScrollTrigger.create({
+                    trigger: stat,
+                    start: 'top 80%',
+                    onEnter: () => {
+                        gsap.fromTo(stat, 
+                            { textContent: 0 },
+                            {
+                                textContent: target,
+                                duration: 2,
+                                ease: 'power2.out',
+                                snap: { textContent: 1 },
+                                onUpdate: function() {
+                                    stat.textContent = Math.round(this.targets()[0].textContent) + (stat.dataset.suffix || '+');
+                                }
+                            }
+                        );
+                    },
+                    once: true
+                });
+            });
+        }
+
+        // Case Study Modal
+        const projectCards = document.querySelectorAll('.project-card');
+        const modal = document.getElementById('caseStudyModal');
+        const closeBtn = document.querySelector('.case-study-close');
+
+        const projectsData = {
+            1: {
+                title: 'NOVA TECH',
+                client: 'Nova Technologies Inc.',
+                services: 'Brand Strategy, Visual Identity, Guidelines',
+                industry: 'Technology',
+                image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1400&q=80',
+                challenge: 'Nova Tech approached us with a need to establish a strong visual presence in the competitive tech market. They required a brand identity that would communicate innovation, reliability, and forward-thinking approach while remaining approachable to their diverse customer base.',
+                process: 'Our design process began with extensive research into the tech industry landscape and Nova\'s target audience. We conducted stakeholder interviews, competitive analysis, and brand workshops to understand the core values and differentiators. Through iterative design explorations, we developed a visual system that balances technological sophistication with human warmth.',
+                solution: 'The final brand identity features a bold, geometric logomark that represents connectivity and innovation. The color palette combines deep tech blues with vibrant accent colors, while the custom typography system ensures brand consistency across all touchpoints. We delivered a comprehensive brand guidelines document and asset library.'
+            },
+            2: {
+                title: 'PULSE APP',
+                client: 'Pulse Health Inc.',
+                services: 'UI/UX Design, Prototyping, User Research',
+                industry: 'Health & Fitness',
+                image: 'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=1400&q=80',
+                challenge: 'Pulse needed a mobile application design that would stand out in the crowded health and fitness market while providing an intuitive user experience for tracking workouts, nutrition, and wellness goals.',
+                process: 'We started with comprehensive user research including surveys and interviews with fitness enthusiasts of varying levels. Through journey mapping and wireframing, we identified key pain points and opportunities. Multiple rounds of usability testing refined the interaction patterns.',
+                solution: 'The final design features a clean, motivating interface with personalized dashboards, seamless workout tracking, and social features that encourage accountability. The dark mode option and accessibility features ensure the app works for all users.'
+            },
+            3: {
+                title: 'METRO FONT',
+                client: 'Metro Lifestyle Co.',
+                services: 'Custom Typography, Font Development, Licensing',
+                industry: 'Fashion & Lifestyle',
+                image: 'https://images.unsplash.com/photo-1626785774625-0b1c2c4eab67?w=1400&q=80',
+                challenge: 'Metro Lifestyle needed a custom typeface that would define their urban, contemporary brand across all touchpoints - from storefront signage to mobile app interfaces.',
+                process: 'We began by analyzing the brand\'s visual DNA and identifying key characteristics that the typeface should embody. Through extensive sketching and digital refinement, we developed a geometric sans-serif with distinctive details that set it apart.',
+                solution: 'Metro Font is a versatile type family with 8 weights and matching italics. Its unique characteristics include slightly rounded terminals and custom ligatures that give the brand a distinctive voice while maintaining excellent readability at all sizes.'
+            },
+            4: {
+                title: 'AURORA',
+                client: 'Aurora Music Festival',
+                services: 'Motion Graphics, Visual Identity, Animation',
+                industry: 'Entertainment',
+                image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1400&q=80',
+                challenge: 'Aurora Festival required a dynamic visual identity that could capture the energy and magic of their annual music event while being adaptable across various digital and physical applications.',
+                process: 'We explored concepts inspired by the northern lights phenomenon, focusing on fluid, organic movements and vibrant color transitions. The design system was built to be generative, allowing for endless variations while maintaining brand coherence.',
+                solution: 'The final identity features an animated logo that morphs and flows like aurora borealis. We delivered a comprehensive motion system including stage visuals, social media templates, wayfinding animations, and an AR experience that brought the festival branding to life.'
+            }
+        };
+
+        projectCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const projectId = card.dataset.project;
+                const project = projectsData[projectId];
+                
+                document.getElementById('caseStudyTitle').textContent = project.title;
+                document.getElementById('caseClient').textContent = project.client;
+                document.getElementById('caseServices').textContent = project.services;
+                document.getElementById('caseIndustry').textContent = project.industry;
+                document.getElementById('caseImage').src = project.image;
+                document.getElementById('caseChallenge').textContent = project.challenge;
+                document.getElementById('caseProcess').textContent = project.process;
+                document.getElementById('caseSolution').textContent = project.solution;
+                
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+
+        // Contact Form
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const btn = e.target.querySelector('.submit-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'SENDING...';
+            
+            setTimeout(() => {
+                btn.textContent = 'MESSAGE SENT!';
+                btn.style.background = '#22c55e';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                    e.target.reset();
+                }, 2000);
+            }, 1500);
+        });
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    gsap.to(window, {
+                        duration: 1,
+                        scrollTo: { y: target, offsetY: 0 },
+                        ease: 'power3.inOut'
+                    });
+                }
+            });
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+</body>
+</html>
